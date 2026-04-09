@@ -1,0 +1,43 @@
+# version: '3.7'
+
+# services:
+#   regression:
+#     image: python:3.12.0a4-alpine3.17
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./:/usr/workspace
+#     command: /bin/sh -c "ls -la && pytest -sv --alluredir=allure-results"
+#     working_dir: /usr/workspace
+#     environment:
+#       - LOGIN=${LOGIN}
+#       - PASSWORD=${PASSWORD}
+
+
+
+services:
+  regression:
+    # 1. Убираем лишний image, оставляем build
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # 2. Правильное монтирование
+    volumes:
+      - .:/usr/workspace
+      # Этот "трюк" защищает установленные внутри контейнера либы от затирания маковскими:
+      - /usr/local/lib/python3.12/site-packages
+      - /usr/local/bin
+      
+    # 3. Более надежная команда запуска
+    command: >
+      /bin/sh -c "python3 -m pytest -sv --alluredir=report"
+    
+    working_dir: /usr/workspace
+    
+    # 4. Переменные окружения
+    environment:
+      - LOGIN=${LOGIN}
+      - PASSWORD=${PASSWORD}
+      - PYTHONUNBUFFERED=1
