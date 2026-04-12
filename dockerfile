@@ -1,17 +1,15 @@
 FROM python:3.12-slim
 
-# Установка системных зависимостей (вместо твоих apk и wget)
+# Установка системных зависимостей 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    # Используем версию 21, так как 17-я удалена из репозиториев Trixie
+    curl \
     openjdk-21-jre-headless \
     chromium \
-    # В новых версиях Debian драйвер часто идет в пакете chromium-driver или просто chromedriver
-    chromium-driver || apt-get install -y chromedriver \
-    curl \
+    chromium-driver \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка Allure (обновил версию для тебя)
+# Установка Allure
 RUN curl -o allure-2.24.0.tgz -Ls https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.24.0/allure-commandline-2.24.0.tgz && \
     tar -zxvf allure-2.24.0.tgz -C /opt/ && \
     ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure && \
